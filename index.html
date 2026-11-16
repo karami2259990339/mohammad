@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Bones Explorer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Human Skeleton Explorer</h1>
+        <p class="subtitle">Click on a body part to learn about its bones</p >
+
+        <div class="buttons">
+            <button onclick="loadBone('skull')">Skull</button>
+            <button onclick="loadBone('spine')">Spine</button>
+            <button onclick="loadBone('arm')">Arm & Hand</button>
+            <button onclick="loadBone('leg')">Leg & Foot</button>
+            <button onclick="loadBone('chest')">Rib Cage</button>
+        </div>
+
+        <div id="info-box" class="info-box">
+            <p>Select a body part above to see information.</p >
+        </div>
+    </div>
+
+    <script>
+        async function loadBone(part) {
+            const infoBox = document.getElementById("info-box");
+            infoBox.innerHTML = "<p>Loading...</p >";
+
+            try {
+                const response = await fetch(`/api/bones/${part}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    infoBox.innerHTML = `<p>Error: ${data.error}</p >`;
+                    return;
+                }
+
+                infoBox.innerHTML = `
+                    <h2>${data.title}</h2>
+                    <p class="count"><strong>Number of bones:</strong> ${data.count}</p >
+                    <p>${data.description}</p >
+                `;
+            } catch (error) {
+                infoBox.innerHTML = "<p>Failed to load data.</p >";
+            }
+        }
+    </script>
+</body>
+</html>
